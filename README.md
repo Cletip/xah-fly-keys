@@ -51,6 +51,23 @@ The following keyboard layouts are supported:
 * "carpalx-qgmlwb"
 * "carpalx-qfmlwy"
 
+Change your workflow easy with this paragraph
+-------------------
+
+This is a catch-all paragraph, which allows you to know some handy commands to help improve your workflow on emacs using xah-fly-keys.
+To know all the commands available after the leader-key (especially where are bind the following commands), do SPC C-h.
+
+### Commands that change your workflow for the better!
+
+1. xah-open-file-fast. Replaces all commands that go to a shortcut. Tip for this command: [see here](http://xahlee.info/emacs/emacs/emacs_hotkey_open_file_fast.html).
+2. another-one: 
+
+
+### Useful/practical commands
+
+- xah-insert-date : allows, as its name indicates, to insert the date. Use "universal-argument" to change the style!
+
+
 Full Documentation
 -------------------
 
