@@ -1,5 +1,8 @@
 
 Tout ce que j'ai à faire pour le conserver à jour : 
+
+https://reflectoring.io/github-fork-and-pull/#Updating-your-Fork
+
 magit :
 
 1. fetch upstream
