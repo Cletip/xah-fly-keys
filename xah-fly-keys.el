@@ -3710,8 +3710,7 @@ minor modes loaded later may override bindings in this map.")
 
 (xah-fly--define-keys
  xah-fly-command-map
- '(
-   ("~" . nil)
+ '(("~" . nil)
    (":" . nil)
 
    ("SPC" . xah-fly-leader-key-map)
@@ -3723,7 +3722,7 @@ minor modes loaded later may override bindings in this map.")
    ("/" . hippie-expand)
    ("\\" . nil)
    ("=" . nil)
-   ("[" . xah-backward-punct )
+   ("[" . xah-backward-punct)
    ("]" . xah-forward-punct)
    ("`" . other-frame)
 
@@ -3767,7 +3766,22 @@ minor modes loaded later may override bindings in this map.")
    ("w" . xah-next-window-or-frame)
    ("x" . xah-toggle-letter-case)
    ("y" . set-mark-command)
-   ("z" . xah-goto-matching-bracket)))
+   ("z" . xah-goto-matching-bracket)
+
+   ("!" . digit-argument)   ;;cp
+   ("@" . digit-argument)   ;;cp
+   ("#" . digit-argument)   ;;cp
+   ("$" . digit-argument)   ;;cp
+   ("%" . digit-argument)   ;;cp
+   ("^" . digit-argument)   ;;cp
+   ("&" . digit-argument)   ;;cp
+   ("*" . digit-argument)   ;;cp
+   ("(" . digit-argument)   ;;cp
+   (")" . digit-argument)   ;;cp
+   ("m" . isearch-forward)  ;;cp, inversion de deux touches, car j'utilise plus
+   ;;l'une isearch-forward que l'autre
+   ("b" . xah-backward-left-bracket) ;;cp
+   ))
 
 
 ;; set control meta, etc keys
@@ -4373,6 +4387,10 @@ minor modes loaded later may override bindings in this map.")
    ("z" . nil)
 
    ;;
+
+   ("SPC" . cp-key-map) ;;cp
+   ("s" . avy-goto-char-2);;cp
+   ("RET" . cp-major-mode);;cp
    ))
 
 
@@ -4691,6 +4709,288 @@ URL`http://xahlee.info/emacs/misc/ergoemacs_vi_mode.html'"
       ;;
       )))
 
+
+
+;; cp
+
+(xah-fly-keys);;activer xah au démarrage (logique) + besoin pour faire les remaps (à placer avant)!
+
+
+  ;; /* éwopy
+   ;; * ,----------------------------------------------------------------------------------------------------------------------.
+   ;; * | ESC  |   1  |   2  |   3  |   4  |   5  |   =  |                    |   %  |   6  |   7  |   8  |   ^  |   0  |ADJUST|
+   ;; * |------+------+------+------+------+------+------+--------------------+------+------+------+------+------+------+------|
+   ;; * |TABtempV?|É  |   W  |   O  |   P  |   Y  |   ?  |                    | BKSP |   ^  |   G  |   D  |   L  |   J  |  Z   |
+   ;; * |------+------+------+------+------+------+------+--------------------+------+------+------+------+------+------+------|
+   ;; * |  C   |   A  |   U  |   E  |   I  |   ,  |  Del |                    |   K  |   C  |   T  |   S  |   R  |   N  |  V   |
+   ;; * |------+------+------+------+------+------+---------------------------+------+------+------+------+------+------+------|
+   ;; * | Shift|libre |   È  |   À  |   .  |   '  | Space|                    | Enter|   B  |   M  |   Q  |   H  |   F  | Shift|
+   ;; * |-------------+------+------+------+------+------+------+------+------+------+------+------+------+------+-------------|
+   ;; * | Ctrl |  GUI |  ALt | EISU |||||||| AZERTY| Space|  Del |||||||| Bksp | Enter| Raise||||||||  X  | Down |  Up  | Right|
+   ;; * ,----------------------------------------------------------------------------------------------------------------------.
+   ;; */
+
+;;chargement de mon clavier
+;;àwx. gqhf vmdlj
+(setq xah--dvorak-to-beopy-kmap
+      '(("-" . "b")
+	("." . "o")
+	("," . "w")
+	("'" . "è")
+	(";" . "ê")
+	("/" . "^") ; NOTE: this is a dead key
+	("[" . "=")
+	("]" . "%")
+	;;	("=" . "z")
+	("b" . "v")
+	("c" . "d")
+	("d" . "c")
+	("f" . "z")
+	("g" . "g")
+	("h" . "t")
+	("i" . ",")
+	("j" . "à")
+	("k" . ".")
+	("l" . "j")
+	("m" . "m")
+	("n" . "r")
+	("o" . "u")
+	("q" . "é")
+	("r" . "l")
+	("s" . "n")
+	("t" . "s")
+	("u" . "i")
+	("v" . "h")
+	("w" . "q")
+	("x" . "k")
+	("z" . "f")
+	("1" . "\"")
+	("2" . "«")
+	("3" . "»")
+	("4" . "(")
+	("5" . ")")
+	("6" . "@")
+	("7" . "+")
+	("8" . "-")
+	("9" . "/")
+	("0" . "*")
+	("\\" . "ç")
+	("`" . "$")
+	;;ici, je rajoute l'accès aux touches numéroté, tel que 1 2...9 et 0
+        ("!" . "1")
+        ("@" . "2")
+        ("#" . "3")
+        ("$" . "4")
+        ("%" . "5")
+        ("^" . "6")
+        ("&" . "7")
+        ("*" . "8")
+        ("(" . "9")
+        (")" . "0")))
+
+;; fonction qui, en fonction du mode, appelle "u" ou "ret" (sur open-line)
+;; (if (eq major-mode 'lisp-interaction-mode)
+    ;; (message "hello")
+  ;; )
+
+
+;;les changement de commandes/remaps
+
+;;meilleur isearch
+(defvar cp-new-function-name-for-isearch "cp/consult-line-or-with-word")
+(defun cp-new-function-for-isearch()
+  "Call the command with the name of the variable cp-new-function-name-for-isearch"
+  (interactive)
+  (call-interactively (intern cp-new-function-name-for-isearch)) ;; call-interactively = comme si l'utilisateur l'appeler normalement
+  ;; (funcall (intern mafonction))
+  )
+(define-key xah-fly-key-map [remap isearch-forward] #'cp-new-function-for-isearch)
+
+;;meilleur recentfile
+(define-key xah-fly-key-map [remap recentf-open-files] #'consult-recent-file)
+
+;;meilleur correction de mot
+;; (define-key xah-fly-key-map [remap ispell-word] #'flyspell-check-previous-highlighted-word)
+(define-key xah-fly-key-map [remap ispell-word] #'flyspell-auto-correct-previous-word)
+
+
+
+;;réduire l'utilisation du doigt du mileu
+;; (define-key xah-fly-key-map [remap backward-char] #'previous-line)
+;; (define-key xah-fly-key-map [remap xah-beginning-of-line-or-block] #'backward-char)
+;; (define-key xah-fly-key-map [remap previous-line] #'xah-beginning-of-line-or-block)
+
+;;réduire l'utilisation du doigt du mileu lors de vertico
+;; (define-key vertico-map [remap forward-char] #'vertico-next)
+;; (define-key vertico-map [remap backward-char] #'vertico-previous)
+
+
+;; Spc Spc
+(xah-fly--define-keys
+ ;; kinda replacement related
+ (define-prefix-command 'cp-key-map) ;;perso
+ '(("'" . restart-emacs)
+   ("-" . magit-status)
+   ("/" . treemacs)
+   ("a" . cp/go-to-config)
+   ("c" . avy-goto-char-2)
+   ("e" . cp/go-to-config)
+   ("h" . org-capture)
+   ("l" . org-sidebar-tree-toggle)
+   ("m" . engine/search-google)
+   ("n" . flycheck-grammalecte-correct-error-before-point)
+   ("o" . org-agenda)
+   ("t" . winner-undo) ;;
+
+   ("<up>" . buf-move-up)
+   ("<down>" . buf-move-down)
+   ("<left>" . buf-move-left)
+   ("<right>" . buf-move-right)))
+
+;; prefix key, voir le paragraphe dans Readme.org pour comprendre
+;;changer la variable ici pour changer la touche de la major mode !
+  ;; (setq lieumajor ",")
+(setq lieumajor "SPC RET")
+
+  (defun cp-major-mode (&rest args)
+  "call different commands depending on what's current major mode."
+  (interactive)
+  ;;pour que ça marche, necessite un argument utilisé ici. Mais enlevé avec les autres messages pour pas que se soit moche
+  ;; (message "wrapper called %s" args)
+  (cond
+   ((string-equal major-mode "org-mode")
+    (message "org mode")
+    (define-key xah-fly-command-map (kbd lieumajor) 'org-mode-keymap))
+   ((string-equal major-mode "org-agenda-mode")
+    ;; (message "")
+    (define-key xah-fly-command-map (kbd lieumajor) 'xah-fly-org-agenda-mode-keymap))
+   ((string-equal major-mode "java-mode")
+    ;; (message "org mode")
+    (define-key xah-fly-command-map (kbd lieumajor) 'xah-fly-java-mode-keymap))
+   ((string-equal major-mode "c-mode")
+    ;; (message "org mode")
+    (define-key xah-fly-command-map (kbd lieumajor) 'xah-fly-c-mode-keymap))
+   ;; more major-mode checking here
+   ;; if nothing match, mettre major mode hydra (tempo)
+   (t
+    ;; (message " Pas de mode pour le majeur mode ")
+    ;;
+    (define-key xah-fly-command-map (kbd lieumajor) 'major-mode-hydra))))
+
+;;chaque fois qu'on change de fenêtre/qu'on en créer etc
+;;c'est le super hook en quelque sorte
+  (add-to-list 'window-buffer-change-functions #'cp-major-mode)
+  (add-to-list 'window-selection-change-functions #'cp-major-mode)
+(add-hook 'window-selection-change-functions #'cp-major-mode)
+
+
+;; pour org-mode
+(xah-fly--define-keys
+ (define-prefix-command 'org-mode-keymap)
+ '(("'" .   org-table-create-or-convert-from-region)
+   ("-" .   org-sort)
+   ;; ("a" . Insertion-code-latex-dans-org)
+   ("a" . org-mode-action-keymap)
+   ("d" . org-meta-return)
+   ("D" . org-insert-todo-heading)
+   ("b" . org-export-dispatch)
+   ("c" . org-set-tags-command)
+
+   ;; ("e" . xah-fly-e-keymap)
+   ;; ("f" . xah-search-current-word)
+   ("g" . org-agenda-open-link)
+   ("h" . org-todo)
+   ;; ("i" . kill-line)
+   ;; ("j" . xah-copy-all-or-region)
+   ;; ("j" . winner-undo)
+   ;; ("k" . xah-paste-or-paste-previous)
+   ;; ("l" . recenter-top-bottom)
+   ("m" . org-refile-goto-last-stored)
+   ("n" . org-refile)
+   ;; ("o" . exchange-point-and-mark)
+   ;; ("p" . query-replace)
+   ;; ("q" . xah-cut-all-or-region)
+   ("r" . org-insert-link)
+   ("L" . org-store-link)
+   ;; ("s" . save-buffer)
+   ;; ("s" . winner-undo);;touche dispo
+   ;; ("s" . major-mode-hydra) ;;perso
+   ("t" . org-schedule)
+   ;; ("u" . switch-to-buffer)
+   ("v" . org-mode-capture-keymap)
+   ("w" . org-capture-goto-last-stored)
+   ;; ("x" . xah-toggle-letter-case)
+   ;; ("x" . xah-toggle-previous-letter-case)
+
+   ;; ("y" . popup-kill-ring)
+   ("z" . org-archive-subtree)))
+
+
+;; org-agenda
+(xah-fly--define-keys
+	 (define-prefix-command 'xah-fly-org-agenda-mode-keymap)
+	 '(
+	   ;; ("a" . mark-whole-buffer)
+	   ;; ("b" . end-of-buffer)
+	   ("c" . org-agenda-set-tags)
+	   ("d" . org-mode-action-keymap)
+	   ;; ("e" . xah-fly-e-keymap)
+	   ;; ("f" . xah-search-current-word)
+	   ("g" . org-agenda-open-link)
+	   ("h" . org-agenda-todo)
+	   ;; ("i" . kill-line)
+	   ;; ("j" . xah-copy-all-or-region)
+	   ;; ("j" . winner-undo)
+	   ;; ("k" . xah-paste-or-paste-previous)
+	   ;; ("l" . recenter-top-bottom)
+	   ("m" . org-refile-goto-last-stored)
+	   ("n" . org-agenda-refile)
+	   ;; ("o" . exchange-point-and-mark)
+	   ;; ("p" . query-replace)
+	   ;; ("q" . xah-cut-all-or-region)
+	   ("r" . org-insert-link)
+	   ;; ("s" . save-buffer)
+	   ;; ("s" . winner-undo);;touche dispo
+	   ;; ("s" . major-mode-hydra) ;;perso
+	   ("t" . org-agenda-schedule)
+	   ;; ("u" . switch-to-buffer)
+	   ;; v
+	   ("w" . org-capture-goto-last-stored)
+	   ;; ("x" . xah-toggle-letter-case)
+	   ;; ("x" . xah-toggle-previous-letter-case)
+	
+	   ;; ("y" . popup-kill-ring)
+	   ("z" . org-agenda-archive)
+	   )
+	 )
+
+;;le c
+(xah-fly--define-keys
+	 (define-prefix-command 'xah-fly-c-mode-keymap)
+	 '(
+	   ;; ',.
+	   ;; ;
+	   ("a" . tool-bar-mode)
+	   ("s" . tool-bar-mode)
+	   ("e" . tool-bar-mode)
+	   ("x" . lsp-command-map)
+	   ;; wxy
+	   ("z" . describe-coding-system)
+	   )
+	 )
+
+;;le java
+(xah-fly--define-keys
+	 (define-prefix-command 'xah-fly-java-mode-keymap)
+	 '(
+
+	   ("a" . tool-bar-mode)
+	   ("g" . java-eval-nofocus)
+	   ("z" . describe-coding-system)
+	   )
+	 )
+
+
 (provide 'xah-fly-keys)
 
 ;; Local Variables:
@@ -4698,3 +4998,4 @@ URL`http://xahlee.info/emacs/misc/ergoemacs_vi_mode.html'"
 ;; End:
 
 ;;; xah-fly-keys.el ends here
+
