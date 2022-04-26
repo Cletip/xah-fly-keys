@@ -1,3 +1,54 @@
+* Le readme
+
+Dans ce readme, je suppose que vous utiliser straight ou use-package (ou les deux) correctement.
+
+** Speed Installation
+
+
+Pas sur de ceci :
+
+#+begin_src emacs-lisp 
+
+(use-package xah-fly-keys
+   ;; :after (xah-fly-keys)
+    :straight '(xah-fly-keys :host github
+			:repo "Cletip/xah-fly-keys"
+			:branch "main"
+			:files ("*.el" "out")
+			)
+    
+    )
+
+#+end_src
+
+** Comment
+
+Ceci est une surcouche de Xah fly keys qui permet de simplifier certaines utilisations. Elle nécessite d'autres packages (si une commande ne marche pas, regarder le nom de la commande et télécharger le package sur internet).
+
+Le but de ce package et d'ajouter des raccourcis au package xah-fly-keys. De
+plus, "SPC ENT" en azerty permet d'appeler un menu différent à chaque major mode. Ce n'est pas vraiment dans la philosophie de xah-fly-keys, mais je trouve ça très pratique dans certains cas.
+
+
+You can install xah-fly-keys like this (minimal configuration):
+
+
+#+begin_src emacs-lisp 
+  
+  (use-package xah-fly-keys	     
+    :config
+     ;;chose your layout
+    (xah-fly-keys-set-layout "azerty")
+
+    (xah-fly-keys)
+
+    )
+  
+#+end_src
+
+
+
+
+
 xah-fly-keys
 ===================
 
