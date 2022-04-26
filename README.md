@@ -1,3 +1,11 @@
+
+Tout ce que j'ai à faire pour le conserver à jour : 
+magit :
+
+1. fetch upstream
+2. me mettre sur master (normalement c'est déjà bon)
+3. faire un merge avec upstream/master
+
 * Le readme
 
 Dans ce readme, je suppose que vous utiliser straight ou use-package (ou les deux) correctement.
