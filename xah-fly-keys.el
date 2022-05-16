@@ -4699,68 +4699,63 @@ URL`http://xahlee.info/emacs/misc/ergoemacs_vi_mode.html'"
 
 (xah-fly-keys);;activer xah au démarrage (logique) + besoin pour faire les remaps (à placer avant)!
 
-
-  ;; /* éwopy
-   ;; * ,----------------------------------------------------------------------------------------------------------------------.
-   ;; * | ESC  |   1  |   2  |   3  |   4  |   5  |   =  |                    |   %  |   6  |   7  |   8  |   ^  |   0  |ADJUST|
-   ;; * |------+------+------+------+------+------+------+--------------------+------+------+------+------+------+------+------|
-   ;; * |TABtempV?|É  |   W  |   O  |   P  |   Y  |   ?  |                    | BKSP |   ^  |   G  |   D  |   L  |   J  |  Z   |
-   ;; * |------+------+------+------+------+------+------+--------------------+------+------+------+------+------+------+------|
-   ;; * |  C   |   A  |   U  |   E  |   I  |   ,  |  Del |                    |   K  |   C  |   T  |   S  |   R  |   N  |  V   |
-   ;; * |------+------+------+------+------+------+---------------------------+------+------+------+------+------+------+------|
-   ;; * | Shift|libre |   È  |   À  |   .  |   '  | Space|                    | Enter|   B  |   M  |   Q  |   H  |   F  | Shift|
-   ;; * |-------------+------+------+------+------+------+------+------+------+------+------+------+------+------+-------------|
-   ;; * | Ctrl |  GUI |  ALt | EISU |||||||| AZERTY| Space|  Del |||||||| Bksp | Enter| Raise||||||||  X  | Down |  Up  | Right|
-   ;; * ,----------------------------------------------------------------------------------------------------------------------.
-   ;; */
-
-;;chargement de mon clavier
-;;àwx. gqhf vmdlj
-(setq xah--dvorak-to-beopy-kmap
-      '(("-" . "b")
+;; La touche sur azerty "v" disparait, 
+(setq xah--dvorak-to-beopy-kmap ;; version optimot, faire un pull request un jour
+      '(("-" . "^") NOTE: this is a dead key
+	("'" . "à")
+	("," . "j")
 	("." . "o")
-	("," . "w")
-	("'" . "è")
-	(";" . "ê")
-	("/" . "^") ; NOTE: this is a dead key
+	(";" . "k")
+	("/" . "x")
+
 	("[" . "=")
 	("]" . "%")
-	;;	("=" . "z")
-	("b" . "v")
-	("c" . "d")
-	("d" . "c")
-	("f" . "z")
-	("g" . "g")
+
+	("=" . "ç")
+
+	("a" . "a")
+	("b" . "g")
+	("c" . "l")
+	("d" . "p")
+	("e" . "e")
+	("f" . "f")
+	("g" . "d")
 	("h" . "t")
 	("i" . ",")
-	("j" . "à")
+	("j" . "è")
 	("k" . ".")
-	("l" . "j")
-	("m" . "m")
+	("l" . "q")
+	("m" . "c")
 	("n" . "r")
-	("o" . "u")
-	("q" . "é")
-	("r" . "l")
+	("o" . "i")
+	("p" . "é")
+	("q" . "y")
+	("r" . "'")
 	("s" . "n")
 	("t" . "s")
-	("u" . "i")
+	("u" . "u")
 	("v" . "h")
-	("w" . "q")
-	("x" . "k")
-	("z" . "f")
-	("1" . "\"")
-	("2" . "«")
-	("3" . "»")
-	("4" . "(")
-	("5" . ")")
-	("6" . "@")
-	("7" . "+")
-	("8" . "-")
-	("9" . "/")
-	("0" . "*")
+	("w" . "m")
+	;; ("x" . "<DEL>")
+	("x" . "w")
+	("y" . "b")
+	("z" . "v")
+
+	;; à faire les nombres, car touche effacer
+	("1" . "«")
+	("2" . "»")
+	("3" . "\"")
+	("4" . "-")
+	("5" . "+")
+	("6" . "*")
+	("7" . "/")
+	("8" . "=")
+	("9" . "(")
+	("0" . ")")
 	("\\" . "ç")
 	("`" . "$")
-	;;ici, je rajoute l'accès aux touches numéroté, tel que 1 2...9 et 0
+
+	;;ici, je rajoute l'accès aux touches numéroté, tel que 1 2...9 et 0, à faire
         ("!" . "1")
         ("@" . "2")
         ("#" . "3")
@@ -4772,31 +4767,45 @@ URL`http://xahlee.info/emacs/misc/ergoemacs_vi_mode.html'"
         ("(" . "9")
         (")" . "0")))
 
+
+
 ;; fonction qui, en fonction du mode, appelle "u" ou "ret" (sur open-line)
 ;; (if (eq major-mode 'lisp-interaction-mode)
     ;; (message "hello")
   ;; )
 
 
-;;les changement de commandes/remaps
+;; Les nouvelles fonctions 
 
-;;meilleur isearch
-(defvar cp-new-function-name-for-isearch "cp/consult-line-or-with-word")
 (defun cp-new-function-for-isearch()
   "Call the command with the name of the variable cp-new-function-name-for-isearch"
   (interactive)
   (call-interactively (intern cp-new-function-name-for-isearch)) ;; call-interactively = comme si l'utilisateur l'appeler normalement
   ;; (funcall (intern mafonction))
   )
+
+(defun cp/open-link ()
+""
+  (interactive)
+  (if (string-equal (org-agenda-open-link) "No link to open here")
+      (progn (xah-open-file-at-cursor))
+    (progn (org-agenda-open-link))))
+
+
+;;les changement de commandes/remaps 
+
+;;meilleur isearch
+(defvar cp-new-function-name-for-isearch "cp/consult-line-or-with-word")
 (define-key xah-fly-key-map [remap isearch-forward] #'cp-new-function-for-isearch)
 
 ;;meilleur recentfile
 (define-key xah-fly-key-map [remap recentf-open-files] #'consult-recent-file)
 
 ;;meilleur correction de mot
-;; (define-key xah-fly-key-map [remap ispell-word] #'flyspell-check-previous-highlighted-word)
 (define-key xah-fly-key-map [remap ispell-word] #'flyspell-auto-correct-previous-word)
 
+;;meilleur ouverture de lien
+(define-key xah-fly-key-map [remap xah-open-file-at-cursor] #'cp/open-link)
 
 
 ;;réduire l'utilisation du doigt du mileu
@@ -4814,17 +4823,18 @@ URL`http://xahlee.info/emacs/misc/ergoemacs_vi_mode.html'"
  ;; kinda replacement related
  (define-prefix-command 'cp-key-map) ;;perso
  '(("'" . restart-emacs)
-   ("-" . magit-status)
-   ("/" . treemacs)
+   ;; ("-" . magit-status)
+   ;; ("/" . org-capture-keymap)
    ("a" . cp/go-to-config)
    ("c" . avy-goto-char-2)
    ("e" . cp/go-to-config)
-   ("h" . org-capture)
+   ("h" . org-capture-keymap)
    ("l" . org-sidebar-tree-toggle)
    ("m" . engine/search-google)
    ("n" . flycheck-grammalecte-correct-error-before-point)
    ("o" . org-agenda)
    ("t" . winner-undo) ;;
+   ("w" . magit-status)
 
    ("<up>" . buf-move-up)
    ("<down>" . buf-move-down)
@@ -4871,43 +4881,143 @@ URL`http://xahlee.info/emacs/misc/ergoemacs_vi_mode.html'"
 ;; pour org-mode
 (xah-fly--define-keys
  (define-prefix-command 'org-mode-keymap)
- '(("'" .   org-table-create-or-convert-from-region)
-   ("-" .   org-sort)
-   ;; ("a" . Insertion-code-latex-dans-org)
-   ("a" . org-mode-action-keymap)
-   ("d" . org-meta-return)
-   ("D" . org-insert-todo-heading)
-   ("b" . org-export-dispatch)
-   ("c" . org-set-tags-command)
+ '(("SPC" . org-mode-babel-keymap)
 
-   ;; ("e" . xah-fly-e-keymap)
-   ;; ("f" . xah-search-current-word)
-   ("g" . org-agenda-open-link)
-   ("h" . org-todo)
-   ;; ("i" . kill-line)
-   ;; ("j" . xah-copy-all-or-region)
-   ;; ("j" . winner-undo)
-   ;; ("k" . xah-paste-or-paste-previous)
-   ;; ("l" . recenter-top-bottom)
-   ("m" . org-refile-goto-last-stored)
-   ("n" . org-refile)
-   ;; ("o" . exchange-point-and-mark)
-   ;; ("p" . query-replace)
-   ;; ("q" . xah-cut-all-or-region)
-   ("r" . org-insert-link)
+   ;; ("-" . "^") NOTE: this is a dead key
+   ("'" . org-table-create-or-convert-from-region)
+   ;; ("," . "j")
+   ("." . org-todo)
+   ;; (";" . "k")
+   ;; ("/" . "x")
+
+   ;; ("[" . "=")
+   ;; ("]" . "%")
+
+   ;; ("=" . "ç")
+
+   ;; ("a" . "a")
+   ;; ("b" . "g")
+   ("c" . org-insert-link)
    ("L" . org-store-link)
-   ;; ("s" . save-buffer)
-   ;; ("s" . winner-undo);;touche dispo
-   ;; ("s" . major-mode-hydra) ;;perso
+   ;; ("d" . "p")
+   ("e" . org-meta-return)
+   ("E" . org-insert-todo-heading)
+   ;; ("f" . "f")
+   ;; ("g" . "d")
+   ;; ("h" . "t")
+   ;; ("i" . ",")
+   ;; ("j" . org-export-dispatch)
+   ("k" . org-export-dispatch)
+   ;; ("l" . "q")
+   ("m" . org-export-dispatch)
+   ("n" . org-refile)
+   ;; ("o" . "i")
+   ("p" . org-set-tags-command)
+   ("q" . org-sort)
+   ;; ("r" . org-insert-link)
+   ;; ("s" . "n")
    ("t" . org-schedule)
-   ;; ("u" . switch-to-buffer)
-   ("v" . org-mode-capture-keymap)
-   ("w" . org-capture-goto-last-stored)
-   ;; ("x" . xah-toggle-letter-case)
-   ;; ("x" . xah-toggle-previous-letter-case)
+   ;; ("u" . org-capture-keymap) ;; TODO
+   ;; ("u" . org-capture)
+   ;; ("v" . "h")
+   ;; ("w" . "m")
+   ;; ("x" . "<DEL>")
+   ;; ("y" . "b")
+   ;; ("z" . "v")
 
-   ;; ("y" . popup-kill-ring)
-   ("z" . org-archive-subtree)))
+   ;; ("g" . org-agenda-open-link)
+   ;;
+   ;; ("m" . org-refile-goto-last-stored)
+
+   ;; ("w" . org-capture-goto-last-stored)
+
+   ;; ("z" . org-archive-subtree)
+   )
+ )
+
+(xah-fly--define-keys
+ (define-prefix-command 'org-mode-babel-keymap)
+ '(
+	   ;; ("a" . mark-whole-buffer)
+	   ;; ("b" . end-of-buffer)
+	   ;; ("c" . org-agenda-set-tags)
+	   ;; ("d" . org-mode-action-keymap)
+	   ;; ("e" . xah-fly-e-keymap)
+	   ;; ("f" . xah-search-current-word)
+	   ("g" . org-babel-tangle)
+	   ("h" . org-babel-demarcate-block)
+	   ;; ("i" . kill-line)
+	   ;; ("j" . xah-copy-all-or-region)
+	   ;; ("j" . winner-undo)
+	   ;; ("k" . xah-paste-or-paste-previous)
+	   ;; ("l" . recenter-top-bottom)
+	   ;; ("m" . org-refile-goto-last-stored)
+	   ;; ("n" . org-agenda-refile)
+	   ;; ("o" . exchange-point-and-mark)
+	   ;; ("p" . query-replace)
+	   ;; ("q" . xah-cut-all-or-region)
+	   ;; ("r" . org-insert-link)
+	   ;; ("s" . save-buffer)
+	   ("t" . org-edit-special)
+	   ;; ("u" . switch-to-buffer)
+	   ;; v
+	   ;; ("w" . org-capture-goto-last-stored)
+	   ;; ("x" . xah-toggle-letter-case)
+	   ;; ("x" . xah-toggle-previous-letter-case)
+	
+	   ;; ("y" . popup-kill-ring)
+	   ;; ("z" . org-agenda-archive)
+	   )
+)
+
+
+;; pour appeler la touche "i" sur un capture
+;; (defun my/captureTemplate ()
+   ;; (interactive)
+   ;; (org-capture nil "i"))
+
+;;TODO
+(xah-fly--define-keys
+ (define-prefix-command 'org-capture-keymap)
+ '(
+	   ;; ("a" . mark-whole-buffer)
+	   ;; ("b" . end-of-buffer)
+	   ;; ("c" . org-agenda-set-tags)
+	   ;; ("d" . org-mode-action-keymap)
+	   ;; ("e" . xah-fly-e-keymap)
+	   ;; ("f" . xah-search-current-word)
+	   ("g" . org-babel-tangle)
+	   ("h" . org-babel-demarcate-block)
+	   ;; ("i" . kill-line)
+	   ;; ("j" . xah-copy-all-or-region)
+	   ;; ("j" . winner-undo)
+	   ;; ("k" . xah-paste-or-paste-previous)
+	   ;; ("l" . recenter-top-bottom)
+	   ;; ("m" . org-refile-goto-last-stored)
+	   ;; ("n" . org-agenda-refile)
+	   ;; ("o" . exchange-point-and-mark)
+	   ;; ("p" . query-replace)
+	   ;; ("q" . xah-cut-all-or-region)
+	   ;; ("r" . org-insert-link)
+	   ;; ("s" . save-buffer)
+	   ("t" . org-edit-special)
+	   ;; ("u" . switch-to-buffer)
+	   ;; v
+	   ;; ("w" . org-capture-goto-last-stored)
+	   ;; ("x" . xah-toggle-letter-case)
+	   ;; ("x" . xah-toggle-previous-letter-case)
+	
+	   ;; ("y" . popup-kill-ring)
+	   ;; ("z" . org-agenda-archive)
+	   )
+)
+
+
+
+
+
+
+
 
 
 ;; org-agenda
