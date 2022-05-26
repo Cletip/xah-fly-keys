@@ -4745,6 +4745,7 @@ URL`http://xahlee.info/emacs/misc/ergoemacs_vi_mode.html'"
 	("0" . ")")
 	("\\" . "ç")
 	("`" . "$")
+
 	("!" . digit-argument) 
 	("@" . digit-argument) 
 	("#" . digit-argument) 
@@ -4757,9 +4758,6 @@ URL`http://xahlee.info/emacs/misc/ergoemacs_vi_mode.html'"
 	(")" . digit-argument)
 
 	))
-
-
-
 
 ;; fonction qui, en fonction du mode, appelle "u" ou "ret" (sur open-line)
 ;; (if (eq major-mode 'lisp-interaction-mode)
