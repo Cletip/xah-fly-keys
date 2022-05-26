@@ -4853,7 +4853,7 @@ URL`http://xahlee.info/emacs/misc/ergoemacs_vi_mode.html'"
   ;; (message "wrapper called %s" args)
   (cond
    ((string-equal major-mode "org-mode")
-    (message "org mode")
+    ;; (message "org mode")
     (define-key xah-fly-command-map (kbd lieumajor) 'org-mode-keymap))
    ((string-equal major-mode "org-agenda-mode")
     ;; (message "")
@@ -4904,7 +4904,7 @@ URL`http://xahlee.info/emacs/misc/ergoemacs_vi_mode.html'"
    ("E" . org-insert-todo-heading)
    ;; ("f" . "f")
    ;; ("g" . "d")
-   ;; ("h" . "t")
+   ;; ("h" . citar-insert-citation)
    ;; ("i" . ",")
    ;; ("j" . org-export-dispatch)
    ("k" . org-export-dispatch)
@@ -4915,7 +4915,7 @@ URL`http://xahlee.info/emacs/misc/ergoemacs_vi_mode.html'"
    ("p" . org-set-tags-command)
    ("q" . org-sort)
    ;; ("r" . org-insert-link)
-   ;; ("s" . "n")
+   ("s" . citar-insert-citation)
    ("t" . org-schedule)
    ;; ("u" . org-capture-keymap) ;; TODO
    ;; ("u" . org-capture)
