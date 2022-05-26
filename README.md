@@ -1,6 +1,13 @@
 
 Tout ce que j'ai à faire pour le conserver à jour : 
 
+sur master (normalement c'est bon, faire un git status)
+git pull --rebase upstream master
+git push --force-with-lease origin master
+
+
+ancien : 
+
 https://reflectoring.io/github-fork-and-pull/#Updating-your-Fork
 
 magit :
