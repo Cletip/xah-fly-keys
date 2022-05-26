@@ -3768,16 +3768,7 @@ minor modes loaded later may override bindings in this map.")
    ("y" . set-mark-command)
    ("z" . xah-goto-matching-bracket)
 
-   ("!" . digit-argument)   ;;cp
-   ("@" . digit-argument)   ;;cp
-   ("#" . digit-argument)   ;;cp
-   ("$" . digit-argument)   ;;cp
-   ("%" . digit-argument)   ;;cp
-   ("^" . digit-argument)   ;;cp
-   ("&" . digit-argument)   ;;cp
-   ("*" . digit-argument)   ;;cp
-   ("(" . digit-argument)   ;;cp
-   (")" . digit-argument)   ;;cp
+
    ("m" . isearch-forward)  ;;cp, inversion de deux touches, car j'utilise plus
    ;;l'une isearch-forward que l'autre
    ("b" . xah-backward-left-bracket) ;;cp
@@ -4771,17 +4762,18 @@ URL`http://xahlee.info/emacs/misc/ergoemacs_vi_mode.html'"
 	("\\" . "ç")
 	("`" . "$")
 
-	;;ici, je rajoute l'accès aux touches numéroté, tel que 1 2...9 et 0, à faire
-        ("!" . "1")
-        ("@" . "2")
-        ("#" . "3")
-        ("$" . "4")
-        ("%" . "5")
-        ("^" . "6")
-        ("&" . "7")
-        ("*" . "8")
-        ("(" . "9")
-        (")" . "0")))
+	("!" . digit-argument) 
+	("@" . digit-argument) 
+	("#" . digit-argument) 
+	("$" . digit-argument) 
+	("%" . digit-argument) 
+	("^" . digit-argument) 
+	("&" . digit-argument) 
+	("*" . digit-argument) 
+	("(" . digit-argument) 
+	(")" . digit-argument)
+
+	))
 
 
 
