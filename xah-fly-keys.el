@@ -4798,6 +4798,9 @@ URL`http://xahlee.info/emacs/misc/ergoemacs_vi_mode.html'"
 (define-key xah-fly-key-map [remap xah-open-file-at-cursor] #'cp/open-link)
 
 
+;;meilleur expand région
+(define-key xah-fly-key-map [remap xah-extend-selection] #'er/expand-region)
+
 ;;réduire l'utilisation du doigt du mileu
 ;; (define-key xah-fly-key-map [remap backward-char] #'previous-line)
 ;; (define-key xah-fly-key-map [remap xah-beginning-of-line-or-block] #'backward-char)
@@ -4814,16 +4817,17 @@ URL`http://xahlee.info/emacs/misc/ergoemacs_vi_mode.html'"
  (define-prefix-command 'cp-key-map) ;;perso
  '(("'" . restart-emacs)
    ;; ("-" . magit-status)
-   ;; ("/" . org-capture-keymap)
    ("a" . cp/go-to-config)
    ("c" . avy-goto-char-2)
    ("e" . cp/go-to-config)
-   ("h" . org-capture-keymap)
+   ("h" . helpful-at-point)
    ("l" . org-sidebar-tree-toggle)
    ("m" . engine/search-google)
    ("n" . flycheck-grammalecte-correct-error-before-point)
    ("o" . org-agenda)
-   ("t" . winner-undo) ;;
+   ("t" . winner-undo)		 ;;
+   ;; ("u" . org-capture-keymap)	 ;; TODO,
+   ("u" . org-capture)
    ("w" . magit-status)
 
    ("<up>" . buf-move-up)
@@ -4863,10 +4867,13 @@ URL`http://xahlee.info/emacs/misc/ergoemacs_vi_mode.html'"
 
 ;;chaque fois qu'on change de fenêtre/qu'on en créer etc
 ;;c'est le super hook en quelque sorte
-  (add-to-list 'window-buffer-change-functions #'cp-major-mode)
-  (add-to-list 'window-selection-change-functions #'cp-major-mode)
-(add-hook 'window-selection-change-functions #'cp-major-mode)
+(setq window-state-change-functions '(cp-major-mode))
 
+
+;;ancien : 
+  ;; (add-to-list 'window-buffer-change-functions #'cp-major-mode)
+  ;; (add-to-list 'window-selection-change-functions #'cp-major-mode)
+;; (add-hook 'window-selection-change-functions #'cp-major-mode)
 
 ;; pour org-mode
 (xah-fly--define-keys
@@ -4875,9 +4882,9 @@ URL`http://xahlee.info/emacs/misc/ergoemacs_vi_mode.html'"
 
    ;; ("-" . "^") NOTE: this is a dead key
    ("'" . org-table-create-or-convert-from-region)
-   ;; ("," . "j")
+   ("," . org-mode-keymap-movement)
    ("." . org-todo)
-   ;; (";" . "k")
+   (";" . org-toggle-narrow-to-subtree)
    ;; ("/" . "x")
 
    ;; ("[" . "=")
@@ -4892,23 +4899,23 @@ URL`http://xahlee.info/emacs/misc/ergoemacs_vi_mode.html'"
    ;; ("d" . "p")
    ("e" . org-meta-return)
    ("E" . org-insert-todo-heading)
-   ;; ("f" . "f")
-   ;; ("g" . "d")
-   ;; ("h" . citar-insert-citation)
+   ;; ("f" . org-toggle-narrow-to-subtree)
+   ("g" . org-roam-buffer-toggle)
+   ("h" . org-roam-node-insert)
    ;; ("i" . ",")
    ;; ("j" . org-export-dispatch)
    ("k" . org-export-dispatch)
    ;; ("l" . "q")
    ("m" . org-export-dispatch)
-   ("n" . org-refile)
-   ;; ("o" . "i")
+   ("n" . org-roam-node-find)
+   ("o" . org-refile)
    ("p" . org-set-tags-command)
    ("q" . org-sort)
    ;; ("r" . org-insert-link)
    ("s" . citar-insert-citation)
    ("t" . org-schedule)
-   ;; ("u" . org-capture-keymap) ;; TODO
-   ;; ("u" . org-capture)
+   ;; ("u" . org-capture-keymap) ;; TODO, mis dans SPC SPC
+   ;; ("u" . org-capture)  ;; TODO changer
    ;; ("v" . "h")
    ;; ("w" . "m")
    ;; ("x" . "<DEL>")
@@ -4924,6 +4931,81 @@ URL`http://xahlee.info/emacs/misc/ergoemacs_vi_mode.html'"
    ;; ("z" . org-archive-subtree)
    )
  )
+
+
+(defun call-keymap (map &optional prompt)
+  "Read a key sequence and call the command it's bound to in MAP."
+  ;; Note: MAP must be a symbol so we can trick `describe-bindings' into giving
+  ;; us a nice help text.
+  (let* ((overriding-local-map `(keymap (,map . ,map)))
+         (help-form `(describe-bindings ,(vector map)))
+         (key (read-key-sequence prompt))
+         (cmd (lookup-key map key t)))
+    (if (functionp cmd) (call-interactively cmd)
+      (user-error "%s is undefined" key))))
+
+(xah-fly--define-keys
+ (define-prefix-command 'org-mode-keymap-movement)
+ '(("SPC" . org-mode-babel-keymap)
+   ("c" . (lambda () (interactive)
+
+	    (progn
+
+	      (org-metaup)
+	      (call-keymap 'org-mode-keymap-movement "enter a foo command: "))))
+   ("h" . (lambda () (interactive)
+
+	    (progn
+
+	      (org-metaleft)
+	      (call-keymap 'org-mode-keymap-movement "enter a foo command: "))))
+
+   ("t" . (lambda () (interactive)
+
+	    (progn
+
+	      (org-metadown)
+	      (call-keymap 'org-mode-keymap-movement "enter a foo command: "))))
+   ("n" . (lambda () (interactive)
+
+	    (progn
+
+	      (org-metaright)
+	      (call-keymap 'org-mode-keymap-movement "enter a foo command: "))))
+
+   ;; pour les gros titres
+
+   ("." . (lambda () (interactive)
+
+	    (progn
+
+	      (org-shiftmetaup)
+	      (call-keymap 'org-mode-keymap-movement "enter a foo command: "))))
+   ("o" . (lambda () (interactive)
+
+	    (progn
+
+	      (org-shiftmetaleft)
+	      (call-keymap 'org-mode-keymap-movement "enter a foo command: "))))
+
+   ("e" . (lambda () (interactive)
+
+	    (progn
+
+	      (org-shiftmetadown)
+	      (call-keymap 'org-mode-keymap-movement "enter a foo command: "))))
+   ("u" . (lambda () (interactive)
+
+	    (progn
+
+	      (org-shiftmetaright)
+	      (call-keymap 'org-mode-keymap-movement "enter a foo command: "))))
+
+   ;;
+   ))
+
+
+
 
 (xah-fly--define-keys
  (define-prefix-command 'org-mode-babel-keymap)
@@ -4961,10 +5043,27 @@ URL`http://xahlee.info/emacs/misc/ergoemacs_vi_mode.html'"
 )
 
 
-;; pour appeler la touche "i" sur un capture
-;; (defun my/captureTemplate ()
-   ;; (interactive)
-   ;; (org-capture nil "i"))
+
+
+;; définition des touches, doivent être relié au touches des captures dans org mode
+(setq org-capture-key-inbox "i")
+(setq org-capture-key-inbox "i")
+(setq org-capture-key-inbox "i")
+(setq org-capture-key-inbox "i")
+(setq org-capture-key-inbox "i")
+(setq org-capture-key-inbox "i")
+(setq org-capture-key-inbox "i")
+
+
+
+;; pour appeler la touche "A" sur un capture
+(defun cp/org-capture-template-inbox () (org-capture nil org-capture-key-inbox))
+(defun cp/org-capture-template-inbox () (org-capture nil org-capture-key-inbox))
+(defun cp/org-capture-template-inbox () (org-capture nil org-capture-key-inbox))
+(defun cp/org-capture-template-inbox () (org-capture nil org-capture-key-inbox))
+(defun cp/org-capture-template-inbox () (org-capture nil org-capture-key-inbox))
+(defun cp/org-capture-template-inbox () (org-capture nil org-capture-key-inbox))
+(defun cp/org-capture-template-inbox () (org-capture nil org-capture-key-inbox))
 
 ;;TODO
 (xah-fly--define-keys
@@ -5001,14 +5100,6 @@ URL`http://xahlee.info/emacs/misc/ergoemacs_vi_mode.html'"
 	   ;; ("z" . org-agenda-archive)
 	   )
 )
-
-
-
-
-
-
-
-
 
 ;; org-agenda
 (xah-fly--define-keys
