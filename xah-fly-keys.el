@@ -1931,7 +1931,7 @@ Version: 2019-03-07"
         ("◆" . "4" )
         ("¤" . "2" )
         ("…" . "...ellipsis" )
-        (" " . "nbsp" )
+        (" " . "nbsp" )
         ("、" . "," )
         ("⭑" . "9" )
         ("🎶" . "5" )
@@ -2306,7 +2306,7 @@ Version: 2020-10-17 2021-10-16"
           (if (region-active-p)
               (buffer-substring-no-properties (region-beginning) (region-end))
             (let (($p0 (point)) $p1 $p2
-                  ($pathStops "^  \t\n\"`'‘’“”|[]{}「」<>〔〕〈〉《》【】〖〗«»‹›❮❯❬❭〘〙·。\\"))
+                  ($pathStops "^  \t\n\"`'‘’“”|[]{}「」<>〔〕〈〉《》【】〖〗«»‹›❮❯❬❭〘〙·。\\"))
               (skip-chars-backward $pathStops)
               (setq $p1 (point))
               (goto-char $p0)
@@ -4759,47 +4759,77 @@ URL`http://xahlee.info/emacs/misc/ergoemacs_vi_mode.html'"
 
 	))
 
-;; fonction qui, en fonction du mode, appelle "u" ou "ret" (sur open-line)
-;; (if (eq major-mode 'lisp-interaction-mode)
-    ;; (message "hello")
-  ;; )
+;; Les nouvelles variables et fonctions pour les fonctions
+(defcustom xah-fork-cp-isearch-forward-function-name 'isearch-forward
+  "To search"
+  :type 'function
+  :group 'xah-fly-keys)
 
-
-;; Les nouvelles fonctions 
-
-(defun cp-new-function-for-isearch()
-  "Call the command with the name of the variable cp-new-function-name-for-isearch"
+(defun xah-fork-cp-isearch-forward-function ()
+  "Call the command assossiated to xah-fork-search-function-name"
   (interactive)
-  (call-interactively (intern cp-new-function-name-for-isearch)) ;; call-interactively = comme si l'utilisateur l'appeler normalement
-  ;; (funcall (intern mafonction))
+  (call-interactively xah-fork-cp-isearch-forward-function-name)
   )
 
-(defun cp/open-link ()
-""
+(define-key xah-fly-key-map [remap isearch-forward] #'xah-fork-cp-isearch-forward-function)
+
+
+(defcustom xah-fork-cp-recentf-open-files-function-name 'recentf-open-files
+  "To search"
+  :type 'function
+  :group 'xah-fly-keys)
+
+(defun xah-fork-cp-recentf-open-files-function ()
+  "Call the command assossiated to xah-fork-search-function-name"
   (interactive)
-  (if (string-equal (org-agenda-open-link) "No link to open here")
-      (progn (xah-open-file-at-cursor))
-    (progn (org-agenda-open-link))))
+  (call-interactively xah-fork-cp-recentf-open-files-function-name)
+  )
+
+(define-key xah-fly-key-map [remap recentf-open-files] #'xah-fork-cp-recentf-open-files-function)
 
 
-;;les changement de commandes/remaps 
+(defcustom xah-fork-cp-ispell-word-function-name 'ispell-word
+  "To search"
+  :type 'function
+  :group 'xah-fly-keys)
 
-;;meilleur isearch
-(defvar cp-new-function-name-for-isearch "cp/consult-line-or-with-word")
-(define-key xah-fly-key-map [remap isearch-forward] #'cp-new-function-for-isearch)
+(defun xah-fork-cp-ispell-word-function ()
+  "Call the command assossiated to xah-fork-search-function-name"
+  (interactive)
+  (call-interactively xah-fork-cp-ispell-word-function-name)
+  )
 
-;;meilleur recentfile
-(define-key xah-fly-key-map [remap recentf-open-files] #'consult-recent-file)
-
-;;meilleur correction de mot
-(define-key xah-fly-key-map [remap ispell-word] #'flyspell-auto-correct-previous-word)
-
-;;meilleur ouverture de lien
-(define-key xah-fly-key-map [remap xah-open-file-at-cursor] #'cp/open-link)
+(define-key xah-fly-key-map [remap ispell-word] #'xah-fork-cp-ispell-word-function-name)
 
 
+(defcustom xah-fork-cp-xah-open-file-at-cursor-function-name 'xah-open-file-at-cursor
+  "To search"
+  :type 'function
+  :group 'xah-fly-keys)
+
+(defun xah-fork-cp-xah-open-file-at-cursor-function ()
+  "Call the command assossiated to xah-fork-search-function-name"
+  (interactive)
+  (call-interactively xah-fork-cp-xah-open-file-at-cursor-function-name)
+  )
+
+(define-key xah-fly-key-map [remap xah-open-file-at-cursor] #'xah-fork-cp-xah-open-file-at-cursor-function)
+
+
+(defcustom xah-fork-cp-xah-extend-selection-function-name 'xah-extend-selection
+  "To search"
+  :type 'function
+  :group 'xah-fly-keys)
+
+(defun xah-fork-cp-xah-extend-selection-function ()
+  "Call the command assossiated to xah-fork-search-function-name"
+  (interactive)
+  (call-interactively xah-fork-cp-xah-extend-selection-function-name)
+  )
 ;;meilleur expand région
-(define-key xah-fly-key-map [remap xah-extend-selection] #'er/expand-region)
+(define-key xah-fly-key-map [remap xah-extend-selection] #'xah-fork-cp-xah-extend-selection-function)
+;; Les nouvelles fonctions 
+
 
 ;;réduire l'utilisation du doigt du mileu
 ;; (define-key xah-fly-key-map [remap backward-char] #'previous-line)
@@ -5173,4 +5203,3 @@ URL`http://xahlee.info/emacs/misc/ergoemacs_vi_mode.html'"
 ;; End:
 
 ;;; xah-fly-keys.el ends here
-
