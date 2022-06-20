@@ -4799,7 +4799,7 @@ URL`http://xahlee.info/emacs/misc/ergoemacs_vi_mode.html'"
   (call-interactively xah-fork-cp-ispell-word-function-name)
   )
 
-(define-key xah-fly-key-map [remap ispell-word] #'xah-fork-cp-ispell-word-function-name)
+(define-key xah-fly-key-map [remap ispell-word] #'xah-fork-cp-ispell-word-function)
 
 
 (defcustom xah-fork-cp-xah-open-file-at-cursor-function-name 'xah-open-file-at-cursor
