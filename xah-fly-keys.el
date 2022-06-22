@@ -4840,30 +4840,62 @@ URL`http://xahlee.info/emacs/misc/ergoemacs_vi_mode.html'"
 ;; (define-key vertico-map [remap forward-char] #'vertico-next)
 ;; (define-key vertico-map [remap backward-char] #'vertico-previous)
 
-
 ;; Spc Spc
 (xah-fly--define-keys
- ;; kinda replacement related
- (define-prefix-command 'cp-key-map) ;;perso
- '(("'" . restart-emacs)
-   ;; ("-" . magit-status)
-   ("a" . cp/go-to-config)
-   ("c" . avy-goto-char-2)
-   ("e" . cp/go-to-config)
-   ("h" . helpful-at-point)
-   ("l" . org-sidebar-tree-toggle)
-   ("m" . engine/search-google)
-   ("n" . flycheck-grammalecte-correct-error-before-point)
-   ("o" . org-agenda)
-   ("t" . winner-undo)		 ;;
-   ;; ("u" . org-capture-keymap)	 ;; TODO,
-   ("u" . org-capture)
-   ("w" . magit-status)
+ (define-prefix-command 'cp-key-map)
+ ;; dvorak t
+ '(
+   ;;
 
-   ("<up>" . buf-move-up)
-   ("<down>" . buf-move-down)
-   ("<left>" . buf-move-left)
-   ("<right>" . buf-move-right)))
+   ;; ("<up>"  . xah-move-block-up)
+   ;; ("<down>"  . xah-move-block-down)
+
+   ("'" . save-buffers-kill-emacs)
+   ("," . emacs-restart)
+   ("." . org-agenda)
+
+   ;; ("0" . nil)
+   ;; ("1" . nil)
+   ;; ("2" . nil)
+   ;; ("3" . nil)
+   ;; ("4" . nil)
+   ;; ("5" . nil)
+   ;; ("6" . nil)
+   ;; ("7" . nil)
+   ;; ("8" . nil)
+   ("9" . flycheck-grammalecte-correct-error-before-point)
+
+   ("a" . engine-mode-prefixed-map)
+   ;; ("b" . nil)
+   ;; ("c" . nil)
+   ;; ("d" . org-capture-keymap)	 ;; TODO,
+   ("d" . org-capture)
+   ;; ("e" . nil)
+   ("f" . org-next-link)
+   
+   ("g" . consult-org-roam-search)
+   ("h" . helpful-at-point)
+   ;; ("i" . nil)
+   ;; ("j" . nil)
+   ;; ("k" . nil)
+   ;; ("l" . nil)
+   ("m" . vulpea-find)
+   ("n" . winner-undo)
+   ;; ("o" . nil)
+   ;; ("p" . nil)
+   ;; ("q" . nil)
+   ;; ("r" . nil)
+   ;; ("s" . nil)
+   ("t" . cp/consult-ripgrep-with-directory)
+   ;; ("u" . mode-specific-map)
+   ("v" . magit-status)   
+   ("w" . ace-swap-window)
+   ;; ("x" . nil)
+   ;; ("y" . nil)
+   ;; ("z" . nil)
+
+   ;;
+   ))
 
 ;; prefix key, voir le paragraphe dans Readme.org pour comprendre
 ;;changer la variable ici pour changer la touche de la major mode !
@@ -4905,10 +4937,13 @@ URL`http://xahlee.info/emacs/misc/ergoemacs_vi_mode.html'"
   ;; (add-to-list 'window-selection-change-functions #'cp-major-mode)
 ;; (add-hook 'window-selection-change-functions #'cp-major-mode)
 
+
 ;; pour org-mode
 (xah-fly--define-keys
  (define-prefix-command 'org-mode-keymap)
- '(("SPC" . org-mode-babel-keymap)
+ '(
+
+   ("SPC" . org-mode-babel-keymap)
 
    ;; ("-" . "^") NOTE: this is a dead key
    ("'" . org-table-create-or-convert-from-region)
@@ -4922,7 +4957,7 @@ URL`http://xahlee.info/emacs/misc/ergoemacs_vi_mode.html'"
 
    ;; ("=" . "ç")
 
-   ;; ("a" . "a")
+   ("a" . org-export-dispatch)
    ;; ("b" . "g")
    ("c" . org-insert-link)
    ("L" . org-store-link)
@@ -4931,36 +4966,27 @@ URL`http://xahlee.info/emacs/misc/ergoemacs_vi_mode.html'"
    ("E" . org-insert-todo-heading)
    ;; ("f" . org-toggle-narrow-to-subtree)
    ("g" . org-roam-buffer-toggle)
-   ("h" . org-roam-node-insert)
+   ("h" . vulpea-insert)
    ;; ("i" . ",")
-   ;; ("j" . org-export-dispatch)
-   ("k" . org-export-dispatch)
+   ("j" . org-deadline)
+   ("k" . org-schedule)
    ;; ("l" . "q")
-   ("m" . org-export-dispatch)
-   ("n" . org-roam-node-find)
+   ;; ("m" . org-export-dispatch)
+   ("n" . vulpea-tags-add)
    ("o" . org-refile)
    ("p" . org-set-tags-command)
    ("q" . org-sort)
-   ;; ("r" . org-insert-link)
+   ("r" . vulpea-meta-add)
    ("s" . citar-insert-citation)
-   ("t" . org-schedule)
+   ("t" . vulpea-find-backlink)
    ;; ("u" . org-capture-keymap) ;; TODO, mis dans SPC SPC
    ;; ("u" . org-capture)  ;; TODO changer
-   ;; ("v" . "h")
-   ;; ("w" . "m")
-   ;; ("x" . "<DEL>")
+   ("v" . vulpea-meta-remove)
+   ("w" . consult-org-roam-forward-links)
+   ("x" . org-time-stamp)
    ;; ("y" . "b")
    ;; ("z" . "v")
-
-   ;; ("g" . org-agenda-open-link)
-   ;;
-   ;; ("m" . org-refile-goto-last-stored)
-
-   ;; ("w" . org-capture-goto-last-stored)
-
-   ;; ("z" . org-archive-subtree)
-   )
- )
+   ))
 
 
 (defun call-keymap (map &optional prompt)
@@ -4974,62 +5000,58 @@ URL`http://xahlee.info/emacs/misc/ergoemacs_vi_mode.html'"
     (if (functionp cmd) (call-interactively cmd)
       (user-error "%s is undefined" key))))
 
+
+(defun cp-org-metaup ()
+  (interactive)
+    (org-metaup)
+    (call-keymap 'org-mode-keymap-movement "enter a foo command: "))
+
+(defun cp-org-metaleft () (interactive)
+	    (progn
+	      (org-metaleft)
+	      (call-keymap 'org-mode-keymap-movement "enter a foo command: ")))
+
+(defun cp-org-metadown () (interactive)
+	      (org-metadown)
+	      (call-keymap 'org-mode-keymap-movement "enter a foo command: "))
+
+
+(defun cp-org-metaright  () (interactive)
+	      (org-metaright)
+	      (call-keymap 'org-mode-keymap-movement "enter a foo command: "))
+
+(defun cp-org-shiftmetaup () (interactive)
+	      (org-shiftmetaup)
+	      (call-keymap 'org-mode-keymap-movement "enter a foo command: "))
+
+(defun cp-org-shiftmetaleft () (interactive)
+	      (org-shiftmetaleft)
+	      (call-keymap 'org-mode-keymap-movement "enter a foo command: "))
+
+(defun cp-org-shiftmetadown () (interactive)
+	      (org-shiftmetadown)
+	      (call-keymap 'org-mode-keymap-movement "enter a foo command: "))
+
+(defun cp-org-shiftmetaright () (interactive)
+	      (org-shiftmetaright)
+	      (call-keymap 'org-mode-keymap-movement "enter a foo command: "))
+
 (xah-fly--define-keys
  (define-prefix-command 'org-mode-keymap-movement)
  '(("SPC" . org-mode-babel-keymap)
-   ("c" . (lambda () (interactive)
+   ("c" . cp-org-metaup)
+   ("h" . cp-org-metaleft)
 
-	    (progn
-
-	      (org-metaup)
-	      (call-keymap 'org-mode-keymap-movement "enter a foo command: "))))
-   ("h" . (lambda () (interactive)
-
-	    (progn
-
-	      (org-metaleft)
-	      (call-keymap 'org-mode-keymap-movement "enter a foo command: "))))
-
-   ("t" . (lambda () (interactive)
-
-	    (progn
-
-	      (org-metadown)
-	      (call-keymap 'org-mode-keymap-movement "enter a foo command: "))))
-   ("n" . (lambda () (interactive)
-
-	    (progn
-
-	      (org-metaright)
-	      (call-keymap 'org-mode-keymap-movement "enter a foo command: "))))
+   ("t" . cp-org-metadown)
+   ("n" . cp-org-metaright)
 
    ;; pour les gros titres
 
-   ("." . (lambda () (interactive)
+   ("." . cp-org-shiftmetaup)
+   ("o" . cp-org-shiftmetaleft)
 
-	    (progn
-
-	      (org-shiftmetaup)
-	      (call-keymap 'org-mode-keymap-movement "enter a foo command: "))))
-   ("o" . (lambda () (interactive)
-
-	    (progn
-
-	      (org-shiftmetaleft)
-	      (call-keymap 'org-mode-keymap-movement "enter a foo command: "))))
-
-   ("e" . (lambda () (interactive)
-
-	    (progn
-
-	      (org-shiftmetadown)
-	      (call-keymap 'org-mode-keymap-movement "enter a foo command: "))))
-   ("u" . (lambda () (interactive)
-
-	    (progn
-
-	      (org-shiftmetaright)
-	      (call-keymap 'org-mode-keymap-movement "enter a foo command: "))))
+   ("e" . cp-org-shiftmetadown)
+   ("u" . cp-org-shiftmetaright)
 
    ;;
    ))
