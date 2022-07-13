@@ -4699,8 +4699,8 @@ URL`http://xahlee.info/emacs/misc/ergoemacs_vi_mode.html'"
 	(";" . "k")
 	("/" . "x")
 
-	("[" . "=")
-	("]" . "%")
+	("[" . "#")
+	("]" . "@")
 
 	("=" . "ç")
 
@@ -4845,7 +4845,7 @@ URL`http://xahlee.info/emacs/misc/ergoemacs_vi_mode.html'"
  (define-prefix-command 'cp-key-map)
  ;; dvorak t
  '(
-   ;;
+   ("RET" . org-capture) ;;cp
 
    ;; ("<up>"  . xah-move-block-up)
    ;; ("<down>"  . xah-move-block-down)
@@ -4869,7 +4869,7 @@ URL`http://xahlee.info/emacs/misc/ergoemacs_vi_mode.html'"
    ;; ("b" . nil)
    ;; ("c" . nil)
    ;; ("d" . org-capture-keymap)	 ;; TODO,
-   ("d" . org-capture)
+   ;; ("d" . org-capture)
    ;; ("e" . nil)
    ("f" . org-next-link)
    
@@ -4908,6 +4908,9 @@ URL`http://xahlee.info/emacs/misc/ergoemacs_vi_mode.html'"
   ;;pour que ça marche, necessite un argument utilisé ici. Mais enlevé avec les autres messages pour pas que se soit moche
   ;; (message "wrapper called %s" args)
   (cond
+   ((string-equal major-mode "minibuffer-mode")
+    ;; (message "org mode")
+    (define-key xah-fly-command-map (kbd lieumajor) 'minibuffer-mode-keymap))
    ((string-equal major-mode "org-mode")
     ;; (message "org mode")
     (define-key xah-fly-command-map (kbd lieumajor) 'org-mode-keymap))
@@ -4923,20 +4926,73 @@ URL`http://xahlee.info/emacs/misc/ergoemacs_vi_mode.html'"
    ;; more major-mode checking here
    ;; if nothing match, mettre major mode hydra (tempo)
    (t
-    ;; (message " Pas de mode pour le majeur mode ")
+    ;; (message "Pas de mode pour le majeur mode")
     ;;
-    (define-key xah-fly-command-map (kbd lieumajor) 'major-mode-hydra))))
+    (define-key xah-fly-command-map (kbd lieumajor) 'no-cp-major-mode )
+    )))
+
+(defun no-cp-major-mode ()
+  (interactive)
+  (message "Pas de keymap personnalisé pour le majeur mode actuel : %s" major-mode)
+  )
 
 ;;chaque fois qu'on change de fenêtre/qu'on en créer etc
 ;;c'est le super hook en quelque sorte
 (setq window-state-change-functions '(cp-major-mode))
-
-
 ;;ancien : 
   ;; (add-to-list 'window-buffer-change-functions #'cp-major-mode)
   ;; (add-to-list 'window-selection-change-functions #'cp-major-mode)
 ;; (add-hook 'window-selection-change-functions #'cp-major-mode)
 
+
+
+(xah-fly--define-keys
+ (define-prefix-command 'minibuffer-mode-keymap)
+ '(
+   ;; ("SPC" . org-mode-babel-keymap)
+
+   ;; ("-" . "^") NOTE: this is a dead key
+   ;; ("'" . org-table-create-or-convert-from-region)
+   ;; ("," . org-mode-keymap-movement)
+   ;; ("." . org-todo)
+   ;; (";" . org-toggle-narrow-to-subtree)
+   ;; ("/" . "x")
+
+   ;; ("[" . "=")
+   ;; ("]" . "%")
+
+   ;; ("=" . "ç")
+
+   ;; ("a" . org-export-dispatch)
+   ;; ("b" . "g")
+   ;; ("c" . org-insert-link)
+   ;; ("L" . org-store-link)
+   ;; ("d" . "p")
+   ;; ("e" . org-meta-return)
+   ;; ("E" . org-insert-todo-heading)
+   ;; ("f" . org-toggle-narrow-to-subtree)
+   ;; ("g" . org-roam-buffer-toggle)
+   ("h" . vulpea-insert)
+   ;; ("i" . ",")
+   ;; ("j" . org-deadline)
+   ;; ("k" . org-schedule)
+   ;; ("l" . "q")
+   ;; ("m" . org-export-dispatch)
+   ("n" . vulpea-tags-add)
+   ;; ("o" . org-refile)
+   ;; ("p" . org-set-tags-command)
+   ;; ("q" . org-sort)
+   ("r" . vulpea-meta-add)
+   ;; ("s" . citar-insert-citation)
+   ("t" . vulpea-find-backlink)
+   ;; ("u" . org-capture-keymap) ;; TODO, mis dans SPC SPC
+   ;; ("u" . org-capture)  ;; TODO changer
+   ("v" . vulpea-meta-remove)
+   ;; ("w" . consult-org-roam-forward-links)
+   ;; ("x" . org-time-stamp)
+   ;; ("y" . "b")
+   ;; ("z" . "v")
+   ))
 
 ;; pour org-mode
 (xah-fly--define-keys
@@ -4964,13 +5020,13 @@ URL`http://xahlee.info/emacs/misc/ergoemacs_vi_mode.html'"
    ;; ("d" . "p")
    ("e" . org-meta-return)
    ("E" . org-insert-todo-heading)
-   ;; ("f" . org-toggle-narrow-to-subtree)
+   ("f" . org-roam-ref-add)
    ("g" . org-roam-buffer-toggle)
    ("h" . vulpea-insert)
    ;; ("i" . ",")
    ("j" . org-deadline)
    ("k" . org-schedule)
-   ;; ("l" . "q")
+   ("l" . "cp-vulpea-buffer-tags-remove-BROUILLON")
    ;; ("m" . org-export-dispatch)
    ("n" . vulpea-tags-add)
    ("o" . org-refile)
@@ -4981,7 +5037,7 @@ URL`http://xahlee.info/emacs/misc/ergoemacs_vi_mode.html'"
    ("t" . vulpea-find-backlink)
    ;; ("u" . org-capture-keymap) ;; TODO, mis dans SPC SPC
    ;; ("u" . org-capture)  ;; TODO changer
-   ("v" . vulpea-meta-remove)
+   ("v" . cp-vulpea-meta-fait-add)
    ("w" . consult-org-roam-forward-links)
    ("x" . org-time-stamp)
    ;; ("y" . "b")
@@ -5055,9 +5111,6 @@ URL`http://xahlee.info/emacs/misc/ergoemacs_vi_mode.html'"
 
    ;;
    ))
-
-
-
 
 (xah-fly--define-keys
  (define-prefix-command 'org-mode-babel-keymap)
