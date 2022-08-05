@@ -3757,6 +3757,18 @@ minor modes loaded later may override bindings in this map.")
    ("m" . isearch-forward)  ;;cp, inversion de deux touches, car j'utilise plus
    ;;l'une isearch-forward que l'autre
    ("b" . xah-backward-left-bracket) ;;cp
+
+
+
+   ;;soulager le petit doigt
+
+
+   ("v" . xah-goto-matching-bracket)
+   ("z" . xah-forward-right-bracket)
+   
+   ;; test pour soulager le petit doigt
+   ;; ("s" . isearch-forward) 
+   ;; ("m" . xah-end-of-line-or-block) ;;cp
    ))
 
 
@@ -4827,7 +4839,9 @@ URL`http://xahlee.info/emacs/misc/ergoemacs_vi_mode.html'"
   (call-interactively xah-fork-cp-xah-extend-selection-function-name)
   )
 ;;meilleur expand région
-(define-key xah-fly-key-map [remap xah-extend-selection] #'xah-fork-cp-xah-extend-selection-function)
+(define-key xah-fly-key-map [remap xah-extend-selection]
+  #'xah-fork-cp-xah-extend-selection-function)
+
 ;; Les nouvelles fonctions 
 
 
@@ -4900,7 +4914,8 @@ URL`http://xahlee.info/emacs/misc/ergoemacs_vi_mode.html'"
 ;; prefix key, voir le paragraphe dans Readme.org pour comprendre
 ;;changer la variable ici pour changer la touche de la major mode !
   ;; (setq lieumajor ",")
-(setq lieumajor "SPC RET")
+;; (setq lieumajor "SPC RET")
+(setq lieumajor ",")
 
   (defun cp-major-mode (&rest args)
   "call different commands depending on what's current major mode."
