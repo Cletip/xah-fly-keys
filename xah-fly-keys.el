@@ -3766,9 +3766,10 @@ minor modes loaded later may override bindings in this map.")
    ("v" . xah-goto-matching-bracket)
    ("z" . xah-forward-right-bracket)
    
-   ;; test pour soulager le petit doigt
-   ;; ("s" . isearch-forward) 
-   ;; ("m" . xah-end-of-line-or-block) ;;cp
+   ;; soulager le petit doigts, inversion des deuxs
+   ("d" . xah-end-of-line-or-block)
+   ("s" . xah-beginning-of-line-or-block)
+   
    ))
 
 
@@ -4911,11 +4912,24 @@ URL`http://xahlee.info/emacs/misc/ergoemacs_vi_mode.html'"
    ;;
    ))
 
+
+;;fonction permettant d'ajouter / remplacer des touches
+(defun cp/xah-fly--add-keys-to (KeymapName place command &optional DirectQ)
+    (eval
+     `(define-key
+        ,KeymapName
+        (kbd (,(if DirectQ #'identity #'xah-fly--key-char)
+              ,place
+              ))
+        ,(list 'quote command))))
+
+;; (cp/xah-fly--add-keys-to 'xah-fly-command-map "b" 'machin)
+
+
 ;; prefix key, voir le paragraphe dans Readme.org pour comprendre
 ;;changer la variable ici pour changer la touche de la major mode !
-  ;; (setq lieumajor ",")
-;; (setq lieumajor "SPC RET")
-(setq lieumajor ",")
+(setq lieumajor (xah-fly--key-char "i"))
+;; (setq lieumajor (concat (xah-fly--key-char "RET") " " (xah-fly--key-char "i")))
 
   (defun cp-major-mode (&rest args)
   "call different commands depending on what's current major mode."
