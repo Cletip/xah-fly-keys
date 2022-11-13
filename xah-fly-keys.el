@@ -3794,16 +3794,15 @@ minor modes loaded later may override bindings in this map.")
 
    ("m" . isearch-forward)  ;;cp, inversion de deux touches, car j'utilise plus
    ;;l'une isearch-forward que l'autre
-   ("b" . xah-backward-left-bracket) ;;cp
 
 
 
    ;;soulager le petit doigt
 
+   ("v" . xah-forward-right-bracket)
+   ("z" . xah-backward-left-bracket)
+   ("b" . xah-goto-matching-bracket)
 
-   ("v" . xah-goto-matching-bracket)
-   ("z" . xah-forward-right-bracket)
-   
    ;; soulager le petit doigts, inversion des deuxs
    ("d" . xah-end-of-line-or-block)
    ("s" . xah-beginning-of-line-or-block)
@@ -4027,7 +4026,14 @@ minor modes loaded later may override bindings in this map.")
    ("8" . inverse-add-global-abbrev)
    ("9" . inverse-add-mode-abbrev)
    ("0" . expand-jump-to-next-slot)
-   ("=" . expand-jump-to-previous-slot)))
+   ("=" . expand-jump-to-previous-slot)
+
+;;
+
+   ("h" . complete-symbol) ;;cp
+   ("e" . indent-for-tab-command) ;;cp
+
+))
 
 
 
@@ -4166,7 +4172,14 @@ minor modes loaded later may override bindings in this map.")
    ;; w
    ("x" . describe-command) ; emacs 28
    ;; y
-   ("z" . describe-coding-system)))
+   ("z" . describe-coding-system)
+
+;; cp
+("p" . cp/find-symbol)
+;; ("." . find-variable-at-point)
+
+
+))
 
 (xah-fly--define-keys
  ;; commands here are “harmless”, they don't modify text etc. they turn on modes, change display, prompt, start shell, etc.
@@ -4419,6 +4432,8 @@ minor modes loaded later may override bindings in this map.")
    ("SPC" . cp-key-map) ;;cp
    ("s" . avy-goto-char-2);;cp
    ("RET" . cp-major-mode);;cp
+
+   ("k" . xah-fly--tab-key-map);;cp
    ))
 
 
@@ -4902,7 +4917,9 @@ URL `http://xahlee.info/emacs/misc/xah-fly-keys.html'"
  (define-prefix-command 'cp-key-map)
  ;; dvorak t
  '(
-   ("RET" . org-capture) ;;cp
+
+   ;; ("RET" . org-capture) ;;cp
+   ("RET" . cp/org-open-or-finish-capture) ;;cp
 
    ;; ("<up>"  . xah-move-block-up)
    ;; ("<down>"  . xah-move-block-down)
@@ -4927,20 +4944,21 @@ URL `http://xahlee.info/emacs/misc/xah-fly-keys.html'"
    ;; ("c" . nil)
    ;; ("d" . org-capture-keymap)	 ;; TODO,
    ;; ("d" . org-capture)
+   ("d" . helpful-at-point)
    ;; ("e" . nil)
    ("f" . org-next-link)
    
    ("g" . consult-org-roam-search)
-   ("h" . helpful-at-point)
+   ("h" . cp/org-edit-special-src-dwim)
    ;; ("i" . nil)
-   ;; ("j" . nil)
+   ("j" . org-next-link)
    ;; ("k" . nil)
    ;; ("l" . nil)
    ("m" . vulpea-find)
    ("n" . winner-undo)
    ;; ("o" . nil)
-   ;; ("p" . nil)
-   ;; ("q" . nil)
+   ("p" . org-capture)
+   ("q" . org-previous-link)
    ;; ("r" . nil)
    ;; ("s" . nil)
    ("t" . cp/consult-ripgrep-with-directory)
@@ -4973,34 +4991,30 @@ URL `http://xahlee.info/emacs/misc/xah-fly-keys.html'"
 (setq lieumajor (xah-fly--key-char "i"))
 ;; (setq lieumajor (concat (xah-fly--key-char "RET") " " (xah-fly--key-char "i")))
 
-  (defun cp-major-mode (&rest args)
+(defun cp-major-mode (&rest args)
   "call different commands depending on what's current major mode."
   (interactive)
   ;;pour que ça marche, necessite un argument utilisé ici. Mais enlevé avec les autres messages pour pas que se soit moche
   ;; (message "wrapper called %s" args)
   (cond
    ((string-equal major-mode "minibuffer-mode")
-    ;; (message "org mode")
     (define-key xah-fly-command-map (kbd lieumajor) 'minibuffer-mode-keymap))
    ((string-equal major-mode "org-mode")
-    ;; (message "org mode")
+    ;; (or (string-equal major-mode "org-mode") org-src-mode)
+
     (define-key xah-fly-command-map (kbd lieumajor) 'org-mode-keymap))
    ((string-equal major-mode "org-agenda-mode")
-    ;; (message "")
     (define-key xah-fly-command-map (kbd lieumajor) 'xah-fly-org-agenda-mode-keymap))
    ((string-equal major-mode "java-mode")
-    ;; (message "org mode")
     (define-key xah-fly-command-map (kbd lieumajor) 'xah-fly-java-mode-keymap))
    ((string-equal major-mode "c-mode")
-    ;; (message "org mode")
     (define-key xah-fly-command-map (kbd lieumajor) 'xah-fly-c-mode-keymap))
    ;; more major-mode checking here
    ;; if nothing match, mettre major mode hydra (tempo)
+   ((or (string-equal major-mode "xah-elisp-mode") (string-equal major-mode "emacs-lisp-mode"))
+    (define-key xah-fly-command-map (kbd lieumajor) 'xah-fly-xah-elisp-mode-keymap))
    (t
-    ;; (message "Pas de mode pour le majeur mode")
-    ;;
-    (define-key xah-fly-command-map (kbd lieumajor) 'no-cp-major-mode )
-    )))
+    (define-key xah-fly-command-map (kbd lieumajor) 'no-cp-major-mode))))
 
 (defun no-cp-major-mode ()
   (interactive)
@@ -5074,7 +5088,7 @@ URL `http://xahlee.info/emacs/misc/xah-fly-keys.html'"
 
    ;; ("-" . "^") NOTE: this is a dead key
    ("'" . org-table-create-or-convert-from-region)
-   ("," . org-mode-keymap-movement)
+   ("," . org-mark-element)
    ("." . org-todo)
    (";" . org-toggle-narrow-to-subtree)
    ;; ("/" . "x")
@@ -5085,12 +5099,13 @@ URL `http://xahlee.info/emacs/misc/xah-fly-keys.html'"
    ;; ("=" . "ç")
 
    ("a" . org-export-dispatch)
-   ;; ("b" . "g")
+   ;; ("b" . org-goto)
+   ("b" . consult-org-heading) ;; mieux
    ("c" . org-insert-link)
    ("L" . org-store-link)
-   ;; ("d" . "p")
+   ("d" . org-mode-keymap-movement)
    ("e" . org-meta-return)
-   ("E" . org-insert-todo-heading)
+   ;; ("E" . org-insert-todo-heading)
    ("f" . org-roam-ref-add)
    ("g" . org-roam-buffer-toggle)
    ("h" . vulpea-insert)
@@ -5098,17 +5113,19 @@ URL `http://xahlee.info/emacs/misc/xah-fly-keys.html'"
    ("j" . org-deadline)
    ("k" . org-schedule)
    ("l" . "cp-vulpea-buffer-tags-remove-BROUILLON")
-   ;; ("m" . org-export-dispatch)
+   ;; ("m" . org-insert-todo-heading)
    ("n" . vulpea-tags-add)
    ("o" . org-refile)
    ("p" . org-set-tags-command)
    ("q" . org-sort)
    ("r" . vulpea-meta-add)
    ("s" . citar-insert-citation)
-   ("t" . vulpea-find-backlink)
+   ;; ("t" . vulpea-find-backlink)
    ;; ("u" . org-capture-keymap) ;; TODO, mis dans SPC SPC
    ;; ("u" . org-capture)  ;; TODO changer
-   ("v" . cp-vulpea-meta-fait-add)
+   
+   ("v" . org-insert-todo-heading)
+   ;; ("v" . cp-vulpea-meta-fait-add)
    ("w" . consult-org-roam-forward-links)
    ("x" . org-time-stamp)
    ;; ("y" . "b")
@@ -5186,37 +5203,39 @@ URL `http://xahlee.info/emacs/misc/xah-fly-keys.html'"
 (xah-fly--define-keys
  (define-prefix-command 'org-mode-babel-keymap)
  '(
-	   ;; ("a" . mark-whole-buffer)
-	   ;; ("b" . end-of-buffer)
-	   ;; ("c" . org-agenda-set-tags)
-	   ;; ("d" . org-mode-action-keymap)
-	   ;; ("e" . xah-fly-e-keymap)
-	   ;; ("f" . xah-search-current-word)
-	   ("g" . org-babel-tangle)
-	   ("h" . org-babel-demarcate-block)
-	   ;; ("i" . kill-line)
-	   ;; ("j" . xah-copy-all-or-region)
-	   ;; ("j" . winner-undo)
-	   ;; ("k" . xah-paste-or-paste-previous)
-	   ;; ("l" . recenter-top-bottom)
-	   ;; ("m" . org-refile-goto-last-stored)
-	   ;; ("n" . org-agenda-refile)
-	   ;; ("o" . exchange-point-and-mark)
-	   ;; ("p" . query-replace)
-	   ;; ("q" . xah-cut-all-or-region)
-	   ;; ("r" . org-insert-link)
-	   ;; ("s" . save-buffer)
-	   ("t" . org-edit-special)
-	   ;; ("u" . switch-to-buffer)
-	   ;; v
-	   ;; ("w" . org-capture-goto-last-stored)
-	   ;; ("x" . xah-toggle-letter-case)
-	   ;; ("x" . xah-toggle-previous-letter-case)
-	
-	   ;; ("y" . popup-kill-ring)
-	   ;; ("z" . org-agenda-archive)
-	   )
-)
+   ;; ("SPC" . cp/org-edit-special-capture-src-dwim)
+
+   ;; ("a" . mark-whole-buffer)
+   ;; ("b" . end-of-buffer)
+   ;; ("c" . org-agenda-set-tags)
+   ;; ("d" . org-mode-action-keymap)
+   ("e" . org-babel-demarcate-block)
+   ;; ("f" . xah-search-current-word)
+   ("g" . org-babel-tangle)
+   ("h" . org-babel-demarcate-block)
+   ;; ("i" . kill-line)
+   ;; ("j" . xah-copy-all-or-region)
+   ;; ("j" . winner-undo)
+   ;; ("k" . xah-paste-or-paste-previous)
+   ;; ("l" . recenter-top-bottom)
+   ;; ("m" . org-refile-goto-last-stored)
+   ("n" . org-babel-insert-header-arg)
+   ("o" . org-babel-mark-block)
+   ;; ("p" . query-replace)
+   ;; ("q" . xah-cut-all-or-region)
+   ;; ("r" . org-insert-link)
+   ;; ("s" . save-buffer)
+   ;; ("t" . cp/org-edit-special-src-dwim)
+   ;; ("u" . switch-to-buffer)
+   ;; v
+   ;; ("w" . org-capture-goto-last-stored)
+   ;; ("x" . xah-toggle-letter-case)
+   ;; ("x" . xah-toggle-previous-letter-case)
+
+   ;; ("y" . popup-kill-ring)
+   ;; ("z" . org-agenda-archive)
+   )
+ )
 
 
 
@@ -5265,7 +5284,7 @@ URL `http://xahlee.info/emacs/misc/xah-fly-keys.html'"
 	   ;; ("q" . xah-cut-all-or-region)
 	   ;; ("r" . org-insert-link)
 	   ;; ("s" . save-buffer)
-	   ("t" . org-edit-special)
+	   ;; ("t" . org-edit-special)
 	   ;; ("u" . switch-to-buffer)
 	   ;; v
 	   ;; ("w" . org-capture-goto-last-stored)
@@ -5340,6 +5359,47 @@ URL `http://xahlee.info/emacs/misc/xah-fly-keys.html'"
 	   ("z" . describe-coding-system)
 	   )
 	 )
+
+
+(xah-fly--define-keys
+ (define-prefix-command 'xah-fly-xah-elisp-mode-keymap)
+ '(
+   ;; ("a" . mark-whole-buffer)
+   ;; ("b" . end-of-buffer)
+   ;; ("c" . org-agenda-set-tags)
+   ;; ("d" . org-mode-action-keymap)
+   ("e" . eval-defun)
+   ;; ("f" . xah-search-current-word)
+   ("g" . sp-forward-slurp-sexp)
+   ("h" . backward-sexp)
+   ;; ("i" . kill-line)
+   ;; ("j" . xah-copy-all-or-region)
+   ("j" . sp-previous-sexp)
+   ;; ("k" . xah-paste-or-paste-previous)
+   ;; ("l" . sp-next-sexp)
+   ;; ("m" . org-refile-goto-last-stored)
+   ("n" . forward-sexp)
+   ("o" . edebug-defun)
+   ;; ("p" . query-replace)
+   ;; ("q" . xah-cut-all-or-region)
+   ("r" . sp-backward-slurp-sexp)
+   ;; ("s" . save-buffer)
+   ;; ("s" . winner-undo);;touche dispo
+   ;; ("s" . major-mode-hydra) ;;perso
+   ;; ("t" . org-agenda-schedule)
+   ;; ("u" . switch-to-buffer)
+   ;; v
+   ;; ("w" . org-capture-goto-last-stored)
+   ;; ("x" . xah-toggle-letter-case)
+   ;; ("x" . xah-toggle-previous-letter-case)
+
+   ;; ("y" . popup-kill-ring)
+   ;; ("z" . org-agenda-archive)
+   )
+ )
+
+
+
 
 
 (provide 'xah-fly-keys)

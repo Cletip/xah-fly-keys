@@ -1,9 +1,16 @@
 
+
+
+
 Tout ce que j'ai à faire pour le conserver à jour : 
+
+
 
 sur master (normalement c'est bon, faire un git status)
 git pull --rebase upstream master
 git push --force-with-lease origin master
+
+
 
 
 ancien : 
@@ -16,6 +23,11 @@ magit :
 2. me mettre sur master (normalement c'est déjà bon)
 3. faire un merge avec upstream/master
 
+si cela na marche pas : 
+
+1. git remote add upstream https://github.com/xahlee/xah-fly-keys
+2. git fetch upstream
+3. dans magit, faire un merge (m m)avec upstream/master, et normalement push (si je suis bien sous origin/master)
 
 # Le readme
 
@@ -39,7 +51,7 @@ Pas sûr de ceci :
 ```
 
 
-##  Comment
+##  Comment 
 
 Ceci est une "surcouche" de Xah fly keys qui permet de simplifier certaines utilisations. Elle nécessite d'autres packages (si une commande ne marche pas, regarder le nom de la commande et télécharger le package sur internet).
 
